@@ -23,7 +23,7 @@ namespace wizard_potion_app.Clients
             ItemResponse<Wizard> response;
             try
             {
-                var container = cosmos.GetContainer("WizardsDb","WizardCollection");
+                var container = cosmos.GetContainer("WizardsDb","WizardsCollection");
                 response = await container.CreateItemAsync(wizard);
                 return response.StatusCode;
             }
@@ -38,7 +38,7 @@ namespace wizard_potion_app.Clients
             try
             {
                 var partitionKey = wizardId.Split('~').First();
-                var container = cosmos.GetContainer("WizardsDb", "WizardCollection");
+                var container = cosmos.GetContainer("WizardsDb", "WizardsCollection");
                 var wizard = await container.ReadItemAsync<Wizard>(wizardId, new PartitionKey(partitionKey));
                 return wizard.Resource;
             }
