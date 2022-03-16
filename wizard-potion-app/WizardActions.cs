@@ -36,6 +36,7 @@ namespace wizard_potion_app
 
                 wizard.Id = $"{wizard.User}~{wizard.Name}";
                 var response = await cosmosClient.CreateWizard(wizard);
+                log.LogInformation("responseStatusCode", response);
                 if (response == HttpStatusCode.Conflict)
                     return new ConflictObjectResult("Failed to create wizard, a wizard with this name already exists");                
 
