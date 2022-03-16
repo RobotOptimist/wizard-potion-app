@@ -12,10 +12,12 @@ namespace wizard_potion_app.Clients
     public class WizardCosmosClient
     {
         private readonly CosmosClient cosmos;
+        private readonly Container container;
 
         public WizardCosmosClient(CosmosClient cosmos)
         {
             this.cosmos = cosmos;
+            container = cosmos.GetContainer("WizardsDb", "WizardsCollection");
         }
 
         public async Task<HttpStatusCode> CreateWizard(Wizard wizard)
@@ -23,7 +25,6 @@ namespace wizard_potion_app.Clients
             ItemResponse<Wizard> response;
             try
             {
-                var container = cosmos.GetContainer("WizardsDb","WizardsCollection");
                 response = await container.CreateItemAsync(wizard);
                 return response.StatusCode;
             }
@@ -38,7 +39,6 @@ namespace wizard_potion_app.Clients
             try
             {
                 var partitionKey = wizardId.Split('~').First();
-                var container = cosmos.GetContainer("WizardsDb", "WizardsCollection");
                 var wizard = await container.ReadItemAsync<Wizard>(wizardId, new PartitionKey(partitionKey));
                 return wizard.Resource;
             }
