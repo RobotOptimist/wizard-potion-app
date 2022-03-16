@@ -50,22 +50,24 @@ namespace wizard_potion_app
 
         [FunctionName("GetWizard")]
         public async Task<IActionResult> GetWizard(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "wizards/{id}")] HttpRequest req,
+            string id,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-
-            string name = req.Query["name"];
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-            return new OkObjectResult(responseMessage);
+            try
+            {
+                var wizard = await cosmosClient.GetWizard(id);           
+                if (wizard is null)
+                {
+                    return new NotFoundObjectResult($"No wizard found matching id: {id}");
+                }
+                return new OkObjectResult(wizard);
+            }
+            catch (Exception ex)
+            {
+                log.LogError("Failed to retrieve the wizard due to an application error", ex);
+                return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
+            }
         }
     }
 }

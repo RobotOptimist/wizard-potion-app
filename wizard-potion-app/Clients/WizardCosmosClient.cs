@@ -32,5 +32,20 @@ namespace wizard_potion_app.Clients
                 return ex.StatusCode;
             }
         }
+
+        public async Task<Wizard?> GetWizard(string wizardId)
+        {
+            try
+            {
+                var partitionKey = wizardId.Split('~').First();
+                var container = cosmos.GetContainer("WizardsDb", "WizardCollection");
+                var wizard = await container.ReadItemAsync<Wizard>(wizardId, new PartitionKey(partitionKey));
+                return wizard.Resource;
+            }
+            catch (CosmosException)
+            {
+                return null;
+            }
+        }
     }
 }
