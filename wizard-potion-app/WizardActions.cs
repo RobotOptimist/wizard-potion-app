@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using wizard_potion_app.Clients;
 using wizard_potion_app.Models;
 using System.Net;
+using System.Security.Claims;
 
 namespace wizard_potion_app
 {
@@ -25,7 +26,8 @@ namespace wizard_potion_app
         [FunctionName("CreateWizard")]
         public async Task<IActionResult> CreateWizard(
             [HttpTrigger("post", Route = null)] HttpRequest req,
-            ILogger log)
+            ILogger log,
+            ClaimsPrincipal claimsPrincipal)
         {
             try
             {
@@ -40,7 +42,7 @@ namespace wizard_potion_app
                 if (response == HttpStatusCode.Conflict)
                     return new ConflictObjectResult("Failed to create wizard, a wizard with this name already exists");                
 
-                return new CreatedResult("", wizard);
+                return new CreatedResult("", claimsPrincipal?.Identity?.Name);
             }
             catch (Exception ex)
             {
@@ -53,7 +55,8 @@ namespace wizard_potion_app
         public async Task<IActionResult> GetWizard(
             [HttpTrigger("get", Route = "wizards/{id}")] HttpRequest req,
             string id,
-            ILogger log)
+            ILogger log, 
+            ClaimsPrincipal claimsPrincipal)
         {
             try
             {
@@ -62,7 +65,7 @@ namespace wizard_potion_app
                 {
                     return new NotFoundObjectResult($"No wizard found matching id: {id}");
                 }
-                return new OkObjectResult(wizard);
+                return new OkObjectResult(new { wizard, claimsPrincipal?.Identity?.Name });
             }
             catch (Exception ex)
             {
