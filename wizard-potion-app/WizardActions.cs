@@ -24,7 +24,7 @@ namespace wizard_potion_app
 
         [FunctionName("CreateWizard")]
         public async Task<IActionResult> CreateWizard(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+            [HttpTrigger("post", Route = null)] HttpRequest req,
             ILogger log)
         {
             try
@@ -51,7 +51,7 @@ namespace wizard_potion_app
 
         [FunctionName("GetWizard")]
         public async Task<IActionResult> GetWizard(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "wizards/{id}")] HttpRequest req,
+            [HttpTrigger("get", Route = "wizards/{id}")] HttpRequest req,
             string id,
             ILogger log)
         {
